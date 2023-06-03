@@ -1,0 +1,116 @@
+---
+title: "Tale of 3 cities"
+author: "Alex Klaus"
+date: "2023-06-03"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+  html_notebook:
+    fig_caption: yes
+    fig_height: 6
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = F, message = F, fig.width = 10, fig.height = 10, results = "asis")
+```
+
+```{r}
+#Loading the required packages
+pkgs <- c("haven", "data.table", "xlsx", "dplyr","reshape2","rJava","readxl","openxlsx", "dplyr", "foreign", "Hmisc", "tidyverse", "data.table", "tm")
+if(!"pacman" %in% installed.packages()[,1]){install.packages("pacman")}
+pacman::p_load(pkgs, character.only = T, install = T)
+```
+
+READING THE DATA FOR THE 3 CITIES
+```{r}
+#NAIROBI
+rm(list=ls())
+sheet_name <- "2Likes_min"
+data_df <- read_excel("C:/Users/Alex/OneDrive/Desktop/Tale of 3 cities/Data/tweets.xlsx", sheet = sheet_name)
+
+```
+
+```{r}
+#KISUMU
+rm(list=ls())
+sheet_name <- " "
+data_df <- read_excel("", sheet = sheet_name)
+
+```
+
+```{r}
+#MOMBASA
+rm(list=ls())
+sheet_name <- " "
+data_df <- read_excel("", sheet = sheet_name)
+
+```
+
+PREPROCESSING EVERY CITY DATA USING THE SAME METHODs ON ALL THE DATA.
+```{r}
+#removing incorrect year information on Time variable
+data_df <- data_df %>% 
+  mutate(Time = format(Time, format = "%H:%M:%S"))
+str(data_df)
+```
+```{r}
+ #Function to label days of the week
+label_weekday <- function(date) {
+  weekdays <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+  weekday <- weekdays[as.POSIXlt(date)$wday + 1]
+  return(weekday)
+}
+
+```
+
+```{r}
+#Adding weekday column to dataframe
+data_df <- data_df %>% 
+  mutate(weekday = label_weekday(Date))
+str(data_df)
+
+```
+```{r}
+#Message counts by user
+message_counts <- data_df %>% 
+  group_by(username) %>% 
+  summarise(message_counts = n())
+View(message_counts)
+```
+
+```{r}
+#Visualizing the message count of the top 10 users.
+#1. sort message_counts descending.
+top_10_counts <- message_counts %>%
+  top_n(10, message_counts) %>%
+
+arrange(desc(message_counts))
+# Plot the bar chart
+ggplot(top_10_counts, aes(x = reorder(username, message_counts), y = message_counts)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Username", y = "Message Counts") +
+  ggtitle("Top 10 User Message Counts") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 14, face = "bold"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank()) +
+  coord_flip()
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
