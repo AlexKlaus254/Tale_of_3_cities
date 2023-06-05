@@ -1,0 +1,168 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Tale of 3 cities},
+  pdfauthor={Alex Klaus},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Tale of 3 cities}
+\author{Alex Klaus}
+\date{2023-06-03}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+READING THE DATA FOR THE 3 CITIES
+
+PREPROCESSING EVERY CITY DATA USING THE SAME METHODs ON ALL THE DATA.
+tibble {[}10,043 x 7{]} (S3: tbl\_df/tbl/data.frame) \$ Date :
+POSIXct{[}1:10043{]}, format: ``2023-04-30'' ``2023-04-30'' \ldots{} \$
+Time : chr {[}1:10043{]} ``22:10:43'' ``20:41:24'' ``19:39:35''
+``19:06:18'' \ldots{} \$ id : num {[}1:10043{]} 1.65e+18 1.65e+18
+1.65e+18 1.65e+18 1.65e+18 \ldots{} \$ content : chr {[}1:10043{]}
+``Sacramento asking for water 🤣\r\n\r\n\#NBA'' ``@nj3ry @ItsDevMutai
+I'm selling hope here. Don't ruin my story 🤣'' ``We're getting old 🤣
+\url{https://t.co/Crakvgh6Ch}'' ``Mbona yanga mmefuzu na hamna furaja
+what's wrong 🤣\r\n\r\n@Hon\_KibayasiF'' \ldots{} \$ username: chr
+{[}1:10043{]} ``Emanzi20'' ``AbadoJack'' ``Finmedicalscrub''
+``miraba\_7'' \ldots{} \$ like : num {[}1:10043{]} 4 2 3 2 2 2 19 3 7 3
+\ldots{} \$ retweet : num {[}1:10043{]} 1 0 0 0 1 0 5 0 1 0 \ldots{}
+
+tibble {[}10,043 x 8{]} (S3: tbl\_df/tbl/data.frame) \$ Date :
+POSIXct{[}1:10043{]}, format: ``2023-04-30'' ``2023-04-30'' \ldots{} \$
+Time : chr {[}1:10043{]} ``22:10:43'' ``20:41:24'' ``19:39:35''
+``19:06:18'' \ldots{} \$ id : num {[}1:10043{]} 1.65e+18 1.65e+18
+1.65e+18 1.65e+18 1.65e+18 \ldots{} \$ content : chr {[}1:10043{]}
+``Sacramento asking for water 🤣\r\n\r\n\#NBA'' ``@nj3ry @ItsDevMutai
+I'm selling hope here. Don't ruin my story 🤣'' ``We're getting old 🤣
+\url{https://t.co/Crakvgh6Ch}'' ``Mbona yanga mmefuzu na hamna furaja
+what's wrong 🤣\r\n\r\n@Hon\_KibayasiF'' \ldots{} \$ username: chr
+{[}1:10043{]} ``Emanzi20'' ``AbadoJack'' ``Finmedicalscrub''
+``miraba\_7'' \ldots{} \$ like : num {[}1:10043{]} 4 2 3 2 2 2 19 3 7 3
+\ldots{} \$ retweet : num {[}1:10043{]} 1 0 0 0 1 0 5 0 1 0 \ldots{} \$
+weekday : chr {[}1:10043{]} ``Sunday'' ``Sunday'' ``Sunday'' ``Sunday''
+\ldots{}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+tibble {[}10,043 x 11{]} (S3: tbl\_df/tbl/data.frame) \$ Date :
+POSIXct{[}1:10043{]}, format: ``2023-04-30'' ``2023-04-30'' \ldots{} \$
+Time : `hms' num {[}1:10043{]} 22:10:43 20:41:24 19:39:35 19:06:18
+\ldots{} ..- attr(*, ``units'')= chr ``secs'' \$ id : num {[}1:10043{]}
+1.65e+18 1.65e+18 1.65e+18 1.65e+18 1.65e+18 \ldots{} \$ content : chr
+{[}1:10043{]} ``Sacramento asking for water 🤣\r\n\r\n\#NBA'' ``@nj3ry
+@ItsDevMutai I'm selling hope here. Don't ruin my story 🤣'' ``We're
+getting old 🤣 \url{https://t.co/Crakvgh6Ch}'' ``Mbona yanga mmefuzu na
+hamna furaja what's wrong 🤣\r\n\r\n@Hon\_KibayasiF'' \ldots{} \$
+username: chr {[}1:10043{]} ``Emanzi20'' ``AbadoJack''
+``Finmedicalscrub'' ``miraba\_7'' \ldots{} \$ like : num {[}1:10043{]} 4
+2 3 2 2 2 19 3 7 3 \ldots{} \$ retweet : num {[}1:10043{]} 1 0 0 0 1 0 5
+0 1 0 \ldots{} \$ weekday : chr {[}1:10043{]} ``Sunday'' ``Sunday''
+``Sunday'' ``Sunday'' \ldots{} \$ Hour : int {[}1:10043{]} 22 20 19 19
+18 17 17 17 16 16 \ldots{} \$ Minute : int {[}1:10043{]} 10 41 39 6 30
+50 40 4 34 32 \ldots{} \$ Second : num {[}1:10043{]} 43 24 35 18 12 19
+12 59 45 2 \ldots{}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+{[}1{]} ``\,''
+
+emoticons will just like one dont know wa people now can 334 322 311 296
+282 239 239 221 220 218
+
+tibble {[}14 x 13{]} (S3: tbl\_df/tbl/data.frame) \$ Date :
+POSIXct{[}1:14{]}, format: ``2023-04-18'' ``2023-04-11'' \ldots{} \$
+Time : `hms' num {[}1:14{]} 20:50:38 07:07:44 07:54:40 08:49:42 \ldots{}
+..- attr(*, ``units'')= chr ``secs'' \$ id : num {[}1:14{]} 1.65e+18
+1.65e+18 1.63e+18 1.62e+18 1.62e+18 \ldots{} \$ content : chr {[}1:14{]}
+``Wachezaji wa YouTube 🤣 \url{https://t.co/b0FMYhpIsL}''
+``@Gideon\_Kitheka Maybe MITHIKA from agriculture docket\ldots{} 😄 🤣
+😂 \r\nAma mama miradi, she has a lot of cash\ldots{} ht''\textbar{}
+\textbf{truncated} ``Mambo tunayopenda kuskia 🤣🌚'' ``Weh! This boy can
+lift heavy stuff 🤣🙌🏾'' \ldots{} \$ username : chr {[}1:14{]}
+``INFLUENCERjr'' ``emdabliu2014'' ``INFLUENCERjr'' ``YourFrenchFry''
+\ldots{} \$ like : num {[}1:14{]} 222 61 74 335 74 63 58 52 54 70
+\ldots{} \$ retweet : num {[}1:14{]} 1 1 1 1 1 1 1 1 1 1 \ldots{} \$
+weekday : chr {[}1:14{]} ``Tuesday'' ``Tuesday'' ``Tuesday'' ``Monday''
+\ldots{} \$ Hour : int {[}1:14{]} 20 7 7 8 6 17 19 21 6 20 \ldots{} \$
+Minute : int {[}1:14{]} 50 7 54 49 24 54 24 0 0 48 \ldots{} \$ Second :
+num {[}1:14{]} 38 44 40 42 19 41 17 19 50 53 \ldots{} \$
+cleaned\_content: chr {[}1:14{]} ``wachezaji wa youtube 🤣'' ``maybe
+mithika from agriculture docket 😄 🤣 😂 \r ama mama miradi she has a
+lot of cash'' ``mambo tunayopenda kuskia 🤣🌚'' ``weh this boy can lift
+heavy stuff 🤣🙌🏾'' \ldots{} \$ word\_count : int {[}1:14{]} 4 18 4 8 25
+3 3 2 7 11 \ldots{}
+
+\includegraphics{Markdown_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\end{document}
