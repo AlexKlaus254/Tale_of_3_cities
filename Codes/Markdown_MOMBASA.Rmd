@@ -1,0 +1,365 @@
+---
+title: "Tale of 3 cities"
+author: "Alex Klaus"
+date: "2023-06-03"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+  html_notebook:
+    fig_caption: yes 
+    fig_height: 6
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = F, message = F, fig.width = 10, fig.height = 10, results = "asis")
+```
+
+```{r}
+#Loading the required packages
+pkgs <- c("haven", "data.table", "xlsx", "dplyr","reshape2","rJava","readxl","openxlsx", "dplyr", "foreign", "Hmisc", "tidyverse", "data.table", "tm", "contractions", "SnowballC", "text", "tokenizers", "stringr", "textclean", "tidytext", "wordcloud", "textcat", "openNLP","caret","RColorBrewer")
+if(!"pacman" %in% installed.packages()[,1]){install.packages("pacman")}
+pacman::p_load(pkgs, character.only = T, install = T)
+```
+
+READING THE DATA FOR THE 3 CITIES
+
+```{r}
+#MOMBASA
+rm(list=ls())
+sheet_name <- "mombasa_1likes_min"
+data_df <- read_excel("C:/Users/Alex/OneDrive/Desktop/Tale_of_3_cities/Data/tweets_mombasa_2.xlsx", sheet = sheet_name)
+
+```
+
+
+PREPROCESSING EVERY CITY DATA USING THE SAME METHODs ON ALL THE DATA.
+```{r}
+#removing incorrect year information on Time variable
+data_df <- data_df %>% 
+  mutate(Time = format(Time, format = "%H:%M:%S"))
+str(data_df)
+```
+
+```{r}
+ #Function to label days of the week
+label_weekday <- function(date) {
+  weekdays <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+  weekday <- weekdays[as.POSIXlt(date)$wday + 1]
+  return(weekday)
+}
+
+```
+
+```{r}
+#Adding weekday column to dataframe
+data_df <- data_df %>% 
+  mutate(weekday = label_weekday(Date))
+str(data_df)
+
+```
+
+```{r}
+weekly <- data_df %>% 
+  group_by(weekday) %>% 
+  summarise(weekly = n()) %>% 
+  as.data.frame()
+
+# Sort the weekdays in the correct order
+weekly$weekday <- factor(weekly$weekday, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+# Plot the donut chart
+ggplot(weekly, aes(x = "", y = weekly, fill = weekday)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "MOMBASA Total tweets per Weekday") +
+  scale_fill_brewer(palette = "Set3") +
+  theme(legend.position = "right",
+plot.title = element_text(hjust = 0.5),
+plot.background = element_rect(fill = "#D3D3D3")) +
+  guides(fill = guide_legend(override.aes = list(color = NULL))) +
+  geom_text(aes(label = weekly), position = position_stack(vjust = 0.5), color = "black", size = 4)
+#View(weekly)
+```
+
+```{r}
+#Computing For Hourly texts per day.
+#First splitting the Time Variable to obtain hours only column
+data_df <- data_df %>% 
+  mutate(Time = parse_time(Time, format = "%H:%M:%S")) %>% 
+  mutate(Hour = hour(Time),
+ Minute = minute(Time),
+ Second = second(Time))
+str(data_df)
+```
+
+```{r}
+daily <- data_df %>% 
+  group_by(Hour) %>% 
+  summarise(daily = n()) %>% 
+  as.data.frame()
+
+ggplot(daily, aes(x = Hour, y = daily, fill = Hour)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Hour", y = "Count", title = "MOMBASA Daily Total tweets  by Hour") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r}
+#Message counts by user
+message_counts <- data_df %>% 
+  group_by(username) %>% 
+  summarise(message_counts = n())
+#View(message_counts)
+```
+
+```{r}
+#Visualizing the message count of the top 10 users.
+#1. sort message_counts descending.
+top_10_counts <- message_counts %>%
+  top_n(10, message_counts) %>%
+
+arrange(desc(message_counts))
+# Plot the bar chart
+ggplot(top_10_counts, aes(x = reorder(username, message_counts), y = message_counts)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Username", y = "Message Counts") +
+  ggtitle("MOMBASA Top 10 User Text Counts") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+axis.title = element_text(size = 12, face = "bold"),
+plot.title = element_text(size = 14, face = "bold"),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+panel.border = element_blank()) +
+  coord_flip()
+
+```
+
+```{r}
+Retweets <- data_df
+Retweets <- Retweets %>% 
+  group_by(username) %>%
+  summarise(total_retweets = sum(retweet)) %>%
+  arrange(desc(total_retweets)) %>%
+  top_n(10)
+
+# Plot the bar chart
+ggplot(Retweets, aes(x = reorder(username, total_retweets), y = total_retweets)) +
+  geom_bar(stat = "identity", fill = "#1DA1F2") +
+  labs(x = "Username", y = "Total Retweets") +
+  ggtitle("MOMBASA Top 10 Users with Most Retweets") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+axis.title = element_text(size = 12, face = "bold"),
+plot.title = element_text(size = 14, face = "bold"),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+panel.border = element_blank()) +
+  coord_flip()
+  
+```
+
+```{r}
+Likes <- data_df
+Likes <- Likes %>% 
+  group_by(username) %>%
+  summarise(total_likes = sum(like)) %>%
+  arrange(desc(total_likes)) %>%
+  top_n(10)
+
+# Plot the bar chart
+ggplot(Likes, aes(x = reorder(username, total_likes), y = total_likes)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(x = "Username", y = "Total Likes") +
+  ggtitle("MOMBASA Top 10 Users with Most Likes") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+axis.title = element_text(size = 12, face = "bold"),
+plot.title = element_text(size = 14, face = "bold"),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+panel.border = element_blank()) +
+  coord_flip()
+
+```
+
+```{r}
+
+# Extract hashtags from the content column
+hashtags <- data_df$content %>%
+  str_extract_all("#\\w+") %>%
+  unlist()
+
+# Count the frequency of each hashtag
+hashtag_counts <- tibble(hashtag = hashtags) %>%
+  count(hashtag, sort = TRUE)
+
+# Print the top 10 most used hashtags
+top_10_hashtags <- head(hashtag_counts, 10) %>% 
+  as.data.frame()
+#print(top_10_hashtags)
+
+# Plot the bar chart
+ggplot(top_10_hashtags, aes(x = reorder(hashtag, n), y = n)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  labs(x = "Hashtag", y = "Hashtag Counts") +
+  ggtitle("Top 10 Hashtags") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 14, face = "bold"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank()) +
+  coord_flip()
+
+```
+
+```{r}
+#FUNCTION TO CLEAN THE TWEETS
+clean_tweets <- function(x) {
+    x %>%
+    # Remove URLs
+    str_remove_all(" ?(f|ht)(tp)(s?)(://)(.*)[.|/](.*)") %>%
+    # Remove mentions e.g. "@my_account"
+    str_remove_all("@[[:alnum:]_]{4,}") %>%
+    # Remove hashtags
+    str_remove_all("#[[:alnum:]_]+") %>%
+    # Replace "&" character reference with "and"
+    str_replace_all("&amp;", "and") %>%
+    # Remove puntucation, using a standard character class
+    str_remove_all("[[:punct:]]") %>%
+    # Remove "RT: " from beginning of retweets
+    str_remove_all("^RT:? ") %>%
+    # Replace any newline characters with a space
+    str_replace_all("\\\n", " ") %>%
+    # Make everything lowercase
+    str_to_lower() %>%
+    # Remove any trailing whitespace around the text
+    str_trim("both")
+
+}
+
+
+cleaned_tweets <- data_df %>%
+  mutate(cleaned_content = clean_tweets(content))
+
+#print(cleaned_tweets$cleaned_content)
+
+```
+
+```{r}
+#STOP WORDS
+# Define the stop words in Swahili
+stop_words_swahili <- c("hata", "kama", "na", "kwa", "kutoka", "kuwa", "sana", "hivyo", "mimi", "yako", "wengine", "hivi", "kwa", "kwamba", "kwenda", "kutokea", "kutwa", "kuja", "ya", "kwenye", "ambayo", "lakini", "kila", "hii", "haya", "sio", "kweli", "nini", "basi", "bila", "kutokana", "mara", "muda", "mwezi", "ndani", "ni", "pamoja", "pia", "sana", "tangu", "vile", "vipi", "wao", "watu", "wengine", "wiki", "wote")
+
+# Define additional stop words in Sheng
+shs <- c('wamlambez', 'baby', 'heeey', 'jana usiku', 'tafala', 'nini', 'gwara', 'majezi', 'bibi', 'mwizi', 'mafisi', 'vibaya', 'tamu', 'kwaheri', 'wivu', 'tupu', 'chali', 'staki', 'mchongoano', 'tulizana', 'sisi', 'hii', 'mchezo', 'kuja', 'juu', 'unajua', 'tumbo', 'kamili', 'wacha', 'kikombe', 'cheza', 'choma', 'makofi', 'kula', 'kiasi', 'hakuna', 'hapa', 'sawa', 'sana', 'macho', 'safi', 'bado', 'mzito')
+
+# Load the stopwords in English
+stop <- stopwords("en")
+
+# Combine all stop words
+all_stop_words <- c(stop, stop_words_swahili, shs)
+
+tokens <- cleaned_tweets$cleaned_content %>% 
+  #Remove emojis
+  gsub("[\\p{So}]", "", ., perl = TRUE) %>%
+  # Tokenize the text
+  strsplit("\\s+") %>%
+  unlist() %>%
+  # Remove stopwords
+  .[!tolower(.) %in% all_stop_words]
+  # Convert the tokens back to a single string
+  paste(collapse = " ")
+  
+  #print(tokens)
+
+```
+
+```{r}
+# Counting the number of words in each cleaned tweet
+cleaned_tweets$word_count <- sapply(strsplit(cleaned_tweets$cleaned_content, " "), length)
+
+# Calculating the average length of the cleaned tweets
+average_length <- mean(cleaned_tweets$word_count)
+
+# Extracting special characters from the cleaned tweets
+emoticons <- str_extract_all(tokens, "[[:alnum:]]+")
+#print(emoticons)
+
+```
+
+```{r}
+#TOP TEN EMOTICONS
+# Flatten the list of emoticons into a vector
+emoticons <- unlist(emoticons)
+
+# Count the frequency of each emoticon
+emoticon_counts <- table(emoticons)
+
+# Sort the emoticon counts in descending order
+sorted_emoticons <- sort(emoticon_counts, decreasing = TRUE)
+
+# Select the top 10 most frequently occurring emoticons
+top_10_emoticons <- head(sorted_emoticons, 10)
+
+# Print the top 10 topics/emoticons
+print(top_10_emoticons)
+```
+
+```{r}
+#Vocabulary extraction
+# Create a list of unique words/tokens from the cleaned tweets
+vocabulary <- unique(unlist(strsplit(tokens, " ")))
+
+#print(vocabulary)
+
+```
+
+```{r}
+#INFORMATION RETRIVAL
+# Retrieve tweets 
+# Retweets with more than 50 likes)
+liked_tweets <- cleaned_tweets[cleaned_tweets$retweet == 1 & cleaned_tweets$like > 50, ]
+
+# Generate summaries or snippets of the cleaned tweets
+summary_tweets <- cleaned_tweets[1:5, ]$cleaned_content
+
+str(liked_tweets)
+#print(summary_tweets)
+
+```
+
+
+```{r}
+# Select the top 50 most frequently occurring emoticons
+top_50_emoticons <- head(sorted_emoticons, 50)
+
+# Create a data frame with the top 50 emoticons and 'MOMBASA'
+top_emoticons <- c("MOMBASA", names(top_50_emoticons))
+top_emoticon_counts <- c(1, top_50_emoticons)
+top_emoticons_df <- data.frame(emoticons = top_emoticons, N = top_emoticon_counts)
+
+# Generate the word cloud
+wordcloud(words = top_emoticons_df$emoticons, freq = top_emoticons_df$N,
+          scale = c(5, 0.8), max.words = 61, random.order = FALSE,
+          colors = brewer.pal(10, "Dark2"))
+
+# Calculate the coordinates to place 'MOMBASA' 
+center_x <- (par()$usr[1] + par()$usr[2]) / 2
+
+text(x = center_x, y = 1, labels = "MOMBASA 🤣", col = "black", cex = 2)
+
+```
+

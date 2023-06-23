@@ -280,7 +280,8 @@ tokens <- cleaned_tweets$cleaned_content %>%
   .[!tolower(.) %in% all_stop_words]
   # Convert the tokens back to a single string
   paste(collapse = " ")
-  #print(tokens)
+  
+  print(tokens)
 
 ```
 
@@ -293,7 +294,7 @@ average_length <- mean(cleaned_tweets$word_count)
 
 # Extracting special characters from the cleaned tweets
 emoticons <- str_extract_all(tokens, "[[:alnum:]]+")
-#print(emoticons)
+print(emoticons)
 
 ```
 
